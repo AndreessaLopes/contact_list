@@ -11,32 +11,53 @@ import Header from './src/components/Header';
  * @returns {JSX.Element} A JSX element containing the View, Header, and StatusBar components.
  */
 export default class App extends React.Component {
-  renderList() {
-    //key: Trata cada elemento da lista, nao como array(lista)
-    // const textElements = names.map(name => {
-    //   return <Text key={name}>{name}</Text>
-    // });
 
-    /* Promises */
-    /*uso a api axios, pego os dados pelo metodo get
-    crio uma constante names passando uma nova forma de array pelo (map) pegando o primeiro nome de cada pessoa do results*/
+  //comecou o componente com estado vazio e chama o render
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      peoples: []
+    };
+  };
+
+  //quando o componente for montado, busca-se a estrutura da api/dados e executa a funcao de callback
+  //dai a partir do setState, ele criia o estado e renderiza novamente, passando os dados das pessoas [pessoa1. pessoa2, pessoa3, pessoa4, pessoa5]
+  componentDidMount() {
     axios
       .get('https://randomuser.me/api/?nat=br&results=5')
       .then(response => {
         const { results } = response.data;
-        const names = results.map(people => people.name.first)
-        console.log(names);
+        this.setState({
+          peoples: results
+        });
       });
     // return textElements;
-  }
+  };
 
+renderList() {
+  //array vazio [].map
+  const textElements = this.state.peoples.map(people =>{
+    const { first } = people.name;
+    return <Text key={ first }>{ first }</Text>
+  });
+  //key: Trata cada elemento da lista, nao como array(lista)
+  // const textElements = names.map(name => {
+  //   return <Text key={name}>{name}</Text>
+  // });
+  return textElements;
+  /* Promises */
+  /*uso a api axios, pego os dados pelo metodo get
+  crio uma constante names passando uma nova forma de array pelo (map) pegando o primeiro nome de cada pessoa do results*/
+  };
   render() {
     return (
+      //dai ele renderiz o header
       <View>
         <Header title="Contacts" />
-        {this.renderList()}
         <StatusBar style="auto" />
+        { this.renderList() }
       </View>
     );
-  };
+  }
 }
